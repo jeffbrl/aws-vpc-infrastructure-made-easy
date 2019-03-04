@@ -1,3 +1,4 @@
+/*
 output vpc {
   value = "${module.vpc.vpc_id}"
 }
@@ -17,3 +18,4 @@ output public_instances_ipv4_address {
 output private_instances_ipv4_address {
   value = "${aws_instance.private_instances.*.private_ip}"
 }
+*/

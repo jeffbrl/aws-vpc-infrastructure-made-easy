@@ -1,0 +1,24 @@
+vpc_tf_one: 
+  region: us-east-2
+  cidr_range: 10.0.0.0/16
+  azs: [ us-east-2a, us-east2b ] 
+  public_subnets: [ 10.0.0.0/24, 10.0.1.0/24 ] 
+  private_subnets: [ 10.0.100.0/24, 10.0.100/24 ] 
+  public_instance_count: 0
+  private_intance_count: 0
+  enable_s3_endpoint: false
+  enable_nat_gateway: false
+  private_instance_count: 1
+  public_instance_count: 1
+vpc_tf_two: 
+  region: us-east-2
+  cidr_range: 10.100.0.0/16
+  azs: [ us-east-2a, us-east2b ]
+  public_subnets: [ 10.100.0.0/24, 10.100.1.0/24 ] 
+  private_subnets: [ 10.100.100.0/24, 10.100.100/24 ]
+  public_instance_count: 0
+  private_intance_count: 0
+  enable_s3_endpoint: true
+  enable_nat_gateway: true
+  private_instance_count: 1
+  public_instance_count: 1
