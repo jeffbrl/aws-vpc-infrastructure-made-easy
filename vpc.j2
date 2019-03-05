@@ -1,0 +1,20 @@
+
+module "{{vpc.name}}" {
+  source = "terraform-aws-modules/vpc/aws"
+  name = "{{vpc.name}}"
+  cidr = "{{ vpc.cidr_range }}"
+  providers = {
+    aws = "aws.{{vpc.region}}"
+  }
+
+  azs  = [ {% for az in vpc.azs %}"{{ az }}"{{ "," if not loop.last }}{% endfor %} ]
+  public_subnets  = [ {% for subnet in vpc.public_subnets %}"{{ subnet }}"{{ "," if not loop.last }}{% endfor %} ]
+  private_subnets  = [ {% for subnet in vpc.private_subnets %}"{{ subnet }}"{{ "," if not loop.last }}{% endfor %} ]
+  
+{# Process parameters that don't require special handling #}
+  {% for parameter, setting in vpc.items() %}
+  {%- if parameter not in ('cidr_range','azs', 'public_subnets', 'private_subnets', 'name', 'region') -%}
+  {{ parameter}} = {{ setting }}
+  {% endif %}
+  {% endfor %}
+}

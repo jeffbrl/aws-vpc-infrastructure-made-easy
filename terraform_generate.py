@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import datetime
+from pathlib import Path
 import sys
 
 from jinja2 import Environment, FileSystemLoader
@@ -13,27 +15,50 @@ def add_bool(self, node):
 Constructor.add_constructor(u'tag:yaml.org,2002:bool', add_bool)
 
 
-def render_template(template, input_yaml_file):
+def file_exists(filename):
+    file_handle = Path(filename)
+    if file_handle.is_file():
+        return True
+    else:
+        return False
 
-    try:
-        f = open(input_yaml_file, 'r')
-        f.close()
-    except IOError:
-       print(f'unable to open {input_yaml_file} file')
-       sys.exit(1)
+def parse_vpcs(input_yaml_file):
 
     with open(input_yaml_file, 'r') as stream:
         try:
             vpcs = yaml.load(stream)
         except yaml.YAMLError as exc:
+            print("===Invalid YAML===")
             print(exc)
             sys.exit(1)
+    return vpcs
 
-        msg = template.render(vpcs=vpcs)
-        print(msg)
+def write_tf_files(vpcs):
+    env = Environment(loader=FileSystemLoader('./'))
+    template = env.get_template('vpc.j2')
+    for vpc in vpcs['Vpcs']:
+      msg = template.render(vpc=vpc)
+      timestamp = datetime.datetime.now().strftime("%Y-%m-%d")
+      output_file = f"terraform/{timestamp}-{vpc['name']}.tf"
+      try:
+          file_handle = Path(output_file)
+          file_handle.write_text(msg)
+      except Exception as e:
+          print(f"unable to write to {output_file}")
+          print(e)
+          sys.exit(1)
 
 if __name__ == '__main__':
-    env = Environment(loader=FileSystemLoader('./'))
-    template = env.get_template('vpcs.j2')
-    render_template(template, input_yaml_file='vpc_config.yml')
+
+    if not file_exists('vpc.j2'):
+        print('unable to open jinja2 template file vpcs.j2')
+        sys.exit(1)
+    if not file_exists('vpc_config.yml'):
+        print('unable to open YAML config file vpc_config.yml')
+        sys.exit(1)
+
+    vpcs = parse_vpcs(input_yaml_file='vpc_config.yml')
+    write_tf_files(vpcs)
+
+#    render_template(template, input_yaml_file='vpc_config.yml')
 

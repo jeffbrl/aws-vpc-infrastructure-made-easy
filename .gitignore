@@ -1,3 +1,5 @@
+.aws*
+
 # ssh keys
 mykey*
 
@@ -15,3 +17,6 @@ terraform.log
 
 # Crash log files
 crash.log
+
+# Ignore terrafile files generated for this millenia
+terraform/2*
