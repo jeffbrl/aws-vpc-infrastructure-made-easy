@@ -1,5 +1,5 @@
 SHELL:=/bin/bash
-.PHONY: clean plan generate apply
+.PHONY: clean plan generate apply destroy
 
 clean:
 	@echo Deleting generating terraform file and state files
