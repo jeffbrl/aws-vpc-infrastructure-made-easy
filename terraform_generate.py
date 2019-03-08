@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import datetime
-import logging
 from pathlib import Path
 import sys
 
@@ -16,6 +15,7 @@ def add_bool(self, node):
 
 Constructor.add_constructor("tag:yaml.org,2002:bool", add_bool)
 
+DEFAULT_YAML_FILE = 'vpc_config.yml'
 
 def file_exists(filename):
     """ Returns true if file exists
@@ -31,14 +31,14 @@ def file_exists(filename):
         return False
 
 
-def parse_vpcs(input_yaml_file):
+def parse_vpcs(yaml_input_file):
     """ Parses VPC configuration from YAML file
-    :param input_yaml_file: The YAML configuration file
-    :type input_yaml_file: str
+    :param yaml_input_file: The YAML configuration file
+    :type yaml_input_file: str
     :returns: dict representing the VPCs
     :rtype: dict
     """
-    with open(input_yaml_file, "r") as stream:
+    with open(yaml_input_file, "r") as stream:
         try:
             vpcs = yaml.load(stream)
         except yaml.YAMLError as exc:
@@ -54,19 +54,38 @@ def write_tf_files(vpcs):
     :type vpcs: dict
     """
     env = Environment(loader=FileSystemLoader("./"))
+
+    # create terraform files per vpc
     template = env.get_template("vpc.j2")
+    outputs_tf_text = ""
     for vpc in vpcs["Vpcs"]:
+        vpc_name = vpc['name']
+        # generate the text for outputs.tf
+        outputs_for_vpc =  (
+        f'output {vpc_name} {{\n'
+        f'  value = "${{module.{vpc_name}.vpc_id}}"\n'
+        f'}}\n'
+        )
+        outputs_tf_text += outputs_for_vpc
+
         msg = template.render(vpc=vpc)
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d")
-        output_file = f"terraform/{timestamp}-{vpc['name']}.tf"
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        vpc_terraform_file = f"terraform/{timestamp}-{vpc_name}.tf"
         try:
-            file_handle = Path(output_file)
+            file_handle = Path(vpc_terraform_file)
             file_handle.write_text(msg)
         except Exception as e:
-            print(f"unable to write to {output_file}")
+            print(f"unable to write to {vpc_terraform_file}")
             print(e)
             sys.exit(1)
-
+    try:
+        outputs_file = f"terraform/{timestamp}-outputs.tf"
+        file_handle = Path(outputs_file)
+        file_handle.write_text(outputs_tf_text)
+    except Exception as e:
+        print(f"unable to write to {outputs_file}")
+        print(e)
+        sys.exit(1)
 
 def validate_vpc_config(vpcs):
     """ Validate VPC configuration and log errors to file
@@ -81,14 +100,20 @@ def validate_vpc_config(vpcs):
 
 def main():
 
+    try:
+        yaml_input_file = sys.argv[1]
+    except IndexError:
+        yaml_input_file = DEFAULT_YAML_FILE
+
+    print(f"yaml_input_file: {yaml_input_file}")
     if not file_exists("vpc.j2"):
         print("unable to open jinja2 template file vpcs.j2")
         return 1
     if not file_exists("vpc_config.yml"):
-        print("unable to open YAML config file vpc_config.yml")
+        print(f"unable to open YAML config file {yaml_input_file}")
         return 1
 
-    vpcs = parse_vpcs(input_yaml_file="vpc_config.yml")
+    vpcs = parse_vpcs(yaml_input_file=yaml_input_file)
     if validate_vpc_config(vpcs):
         write_tf_files(vpcs)
     else:
