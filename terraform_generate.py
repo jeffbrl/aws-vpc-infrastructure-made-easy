@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import datetime
+import logging
 from pathlib import Path
 import sys
 
@@ -16,6 +17,11 @@ def add_bool(self, node):
 Constructor.add_constructor("tag:yaml.org,2002:bool", add_bool)
 
 DEFAULT_YAML_FILE = 'vpc_config.yml'
+
+logger = logging.getLogger("root")
+FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
+logging.basicConfig(filename='vpcs.log', format=FORMAT, level=logging.INFO)
+
 
 def file_exists(filename):
     """ Returns true if file exists
@@ -105,7 +111,7 @@ def main():
     except IndexError:
         yaml_input_file = DEFAULT_YAML_FILE
 
-    print(f"yaml_input_file: {yaml_input_file}")
+    logger.info(f"yaml_input_file: {yaml_input_file}")
     if not file_exists("vpc.j2"):
         print("unable to open jinja2 template file vpcs.j2")
         return 1
