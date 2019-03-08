@@ -5,7 +5,7 @@ clean:
 	@echo Deleting generating terraform file and state files
 	@find . | grep -P "terraform/[0-9]{4}-[0-9]{2}-[0-9]{2}-.*tf" | xargs -d"\n" rm -f || true
 	@find . | grep -P "terraform/terraform.tfstate" | xargs -d"\n" rm -f || true
-generate:
+generate: clean
 	@echo Generating terraform templates from YAML file
 	@python terraform_generate.py
 	@cd terraform;terraform fmt
