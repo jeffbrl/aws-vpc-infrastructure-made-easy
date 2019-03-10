@@ -21,10 +21,13 @@ On Ubuntu 18.04 (x64):
 Install terraform as described in this [blog](https://computingforgeeks.com/how-to-install-terraform-on-ubuntu-centos-7/).
 
 ```
-sudo apt-get install git make
+sudo apt-get install git build-essential virtualenv
 # clone the repo
 git clone https://github.com/jeffbrl/aws-vpc-infrastructure-made-easy.git
 cd aws-vpc-infrastructure-made-easy
+virtualenv venv -p python3.6
+source venv/bin/activate
+pip install -r requirements.txt
 export AWS_ACCESS_KEY_ID="anaccesskey"
 export AWS_SECRET_ACCESS_KEY="asecretkey"
 ```
