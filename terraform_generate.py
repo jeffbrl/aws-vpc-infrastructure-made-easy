@@ -100,11 +100,33 @@ def validate_vpc_config(vpcs):
     :returns: True if VPC configuration is valid
     :rtype: bool
     """
-    # unimplemented
-    return True
+    is_valid = True
+    vpcs_to_check = vpcs['Vpcs']
+
+    for vpc in vpcs_to_check:
+        # AZs must match region
+        for az in vpc['azs']:
+            if not vpc['region'] in az: # e.g., us-east-1 not in eu-west-1a
+                logger.error(f"{az} not in {vpc['region']}")
+                is_valid = False
+        # number of AZs must equal public and private subnet counts
+        if len(vpc['azs']) != len(vpc['public_subnets']):
+            logger.info(f"AZ count: {len(vpc['azs'])}")
+            logger.info(f"public subnet count: {len(vpc['public_subnets'])}")
+            logger.error('Number of AZs must equal number of public subnets')
+            is_valid = False
+        if len(vpc['azs']) != len(vpc['private_subnets']):
+            logger.info(f"AZ count: {len(vpc['azs'])}")
+            logger.info(f"private subnet count: {len(vpc['private_subnets'])}")
+            logger.error('Number of AZs must equal number of private subnets')
+            is_valid = False
+
+    return is_valid
 
 
 def main():
+    logger.info('========================================')
+    logger.info(f'{sys.argv[0]} executing at {datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")}')
 
     try:
         yaml_input_file = sys.argv[1]
@@ -128,7 +150,6 @@ def main():
         )
         return 1
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())
