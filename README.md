@@ -21,12 +21,10 @@ On Ubuntu 18.04 (x64):
 
 ```
 sudo apt-get update
-sudo apt-get install git build-essential virtualenv unzip
+sudo apt-get install git build-essential unzip python3-pip
 git clone https://github.com/jeffbrl/aws-vpc-infrastructure-made-easy.git
 cd aws-vpc-infrastructure-made-easy
-virtualenv venv -p python3.6
-source venv/bin/activate
-pip install -r requirements.txt
+sudo pip3 install -r requirements.txt
 # install terraform if not already installed
 export VER="0.11.12"
 wget https://releases.hashicorp.com/terraform/${VER}/terraform_${VER}_linux_amd64.zip \
@@ -65,8 +63,8 @@ Vpcs:
 
 You can build the sandbox using the following steps.
 ```
-make init
 make generate
+make init
 make plan
 make apply
 ```
