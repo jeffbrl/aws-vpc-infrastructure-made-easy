@@ -20,7 +20,7 @@ clean:
 
 generate: clean
 	@echo Generating terraform templates from YAML file
-	@python terraform_generate.py $(GENERATE_ARGS)
+	@./terraform_generate.py $(GENERATE_ARGS)
 	@cd terraform;terraform fmt
 plan:
 	@echo Executing terraform plan
