@@ -1,5 +1,5 @@
 SHELL:=/bin/bash
-.PHONY: clean plan generate apply destroy
+.PHONY: clean plan generate apply destroy init
 
 # pass arguments to make as described at
 # https://stackoverflow.com/questions/2214575/passing-arguments-to-make-run
@@ -11,6 +11,8 @@ ifeq (generate,$(firstword $(MAKECMDGOALS)))
   $(eval $(GENERATE_ARGS):;@:)
 endif
 
+init:
+	@cd terraform; terraform init
 clean:
 	@echo Deleting generating terraform file and state files
 	@find . | grep -P "terraform/[0-9]{4}-[0-9]{2}-[0-9]{2}_.*tf" | xargs -d"\n" rm -f || true
