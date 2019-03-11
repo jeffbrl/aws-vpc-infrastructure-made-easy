@@ -24,12 +24,12 @@ sudo apt-get update
 sudo apt-get install git build-essential unzip python3-pip
 git clone https://github.com/jeffbrl/aws-vpc-infrastructure-made-easy.git
 cd aws-vpc-infrastructure-made-easy
-sudo pip3 install -r requirements.txt
+pip3 install -r requirements.txt
 # install terraform if not already installed
 export VER="0.11.12"
 wget https://releases.hashicorp.com/terraform/${VER}/terraform_${VER}_linux_amd64.zip \
 -O /tmp/terraform_${VER}_linux_amd64.zip
-unzip /tmp/terraform_0.11.12_linux_amd64.zip
+unzip /tmp/terraform_0.11.12_linux_amd64.zip -d /tmp
 sudo mv /tmp/terraform /usr/local/bin/terraform
 sudo chown root:root /usr/local/bin/terraform
 export AWS_ACCESS_KEY_ID="anaccesskey"
