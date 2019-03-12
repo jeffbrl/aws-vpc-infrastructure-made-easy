@@ -19,4 +19,4 @@ terraform.log
 crash.log
 
 # Ignore terrafile files generated for this millenia
-terraform/2*
+terraform-files/2*

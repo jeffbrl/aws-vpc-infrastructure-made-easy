@@ -76,7 +76,7 @@ def write_tf_files(vpcs):
 
         msg = template.render(vpc=vpc)
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        vpc_terraform_file = f"terraform/{timestamp}-{vpc_name}.tf"
+        vpc_terraform_file = f"terraform-files/{timestamp}-{vpc_name}.tf"
         try:
             file_handle = Path(vpc_terraform_file)
             file_handle.write_text(msg)
@@ -85,7 +85,7 @@ def write_tf_files(vpcs):
             print(e)
             sys.exit(1)
     try:
-        outputs_file = f"terraform/{timestamp}-outputs.tf"
+        outputs_file = f"terraform-files/{timestamp}-outputs.tf"
         file_handle = Path(outputs_file)
         file_handle.write_text(outputs_tf_text)
     except Exception as e:
